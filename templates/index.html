@@ -1,10 +1,113 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>USB Serial Communication</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <title>Web Serial Communication</title>
+    <style>
+        /* Add CSS styling here */
+        /* .container {
+            display: flex;
+            align-items: flex-start;
+        } */
+        .editable-field {
+            border: 1px solid #ccc;
+            padding: 4px;
+            width: 50px;
+            background-color: white;
+        }
+
+        .editable-field[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .inputs {
+            margin-right: 20px;
+        }
+
+        #dataTable {
+            border-collapse: collapse;
+        }
+
+        #dataTable th,
+        #dataTable td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+    </style>
 </head>
+
 <body>
-    <button id="connectBtn">Connect to USB</button>
+    <div class="row" style="padding-left: 20px; padding-top: 50px;">
+        <div class="col-sm-3 mb-3 mb-sm-0">
+            <div class="card" style="padding: 15px;">
+                <button id="connectBtn" type="button" class="btn btn-primary" style="margin: 5px;">Connect to
+                    Arduino</button>
+                <button id="disconnectBtn" type="button" class="btn btn-primary" style="margin: 5px;"
+                    disabled>Disconnect</button>
+                <button id="sendBtn" type="button" class="btn btn-primary" style="margin: 5px;" disabled>Send
+                    Data</button>
+
+                <select class="form-select" id="byteValue">
+                    <option value="65">Byte Value 65</option>
+                    <option value="66">Byte Value 66</option>
+                    <option value="67">Byte Value 67</option>
+                </select>
+                <br>
+                <p class="alert alert-primary" id="statusMessage"></p>
+                <br>
+                <p class="alert alert-primary" id="byteValueDisplay"></p>
+                <br>
+                <p class="alert alert-primary" id="serialDataDisplay"></p>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="card " style="padding: 15px;">
+                <div class="inputs">
+                    <label for="input1">Input 1:</label>
+                    <input type="number" id="input1" placeholder="Enter an integer"><br>
+                    <label for="input2">Input 2:</label>
+                    <input type="number" id="input2" placeholder="Enter another integer"><br>
+                    <label for="dropdown1">Dropdown 1:</label>
+                    <select class="form-select" id="dropdown1">
+                        <option value="option1">Option 1</option>
+                        <option value="option2">Option 2</option>
+                        <option value="option3">Option 3</option>
+                    </select><br>
+                    <label for="dropdown2">Dropdown 2:</label>
+                    <select class="form-select" id="dropdown2">
+                        <option value="optionA">Option A</option>
+                        <option value="optionB">Option B</option>
+                        <option value="optionC">Option C</option>
+                    </select><br>
+                    <button id="generateTableBtn">Generate Table</button>
+                    <p id="errorMessage" style="color: red;"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-5">
+            <div class="card" style="padding: 15px;">
+                <table class="table" id="dataTable">
+                    <tr>
+                        <th>Input 1</th>
+                        <th>Input 2</th>
+                        <th>Dropdown 1</th>
+                        <th>Dropdown 2</th>
+                    </tr>
+                    <tbody id="dataRows"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
