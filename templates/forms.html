@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask-WTF Example</title>
+</head>
+<body>
+    <h1>Flask-WTF Example</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}  <!-- Include CSRF token -->
+        <div>
+            {{ form.name.label }}  <!-- Render the label for the 'name' field -->
+            {{ form.name() }}      <!-- Render the input field for the 'name' field -->
+        </div>
+        <div>
+            {{ form.submit() }}    <!-- Render the submit button -->
+        </div>
+    </form>
+</body>
+</html>

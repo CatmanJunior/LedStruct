@@ -8,15 +8,11 @@ const dropdown1 = document.getElementById('dropdown1');
 const dropdown2 = document.getElementById('dropdown2');
 const generateTableBtn = document.getElementById('generateTableBtn');
 const dataTable = document.getElementById('dataTable');
-const statusMessage = document.getElementById('statusMessage');
-const byteValueDisplay = document.getElementById('byteValueDisplay');
-const serialDataDisplay = document.getElementById('serialDataDisplay');
 const dataRows = document.getElementById('dataRows');
+const serialDataConsole = document.getElementById('consoleOutput');
 
-let reader;
+let lastDataIndex = 0; // Keep track of the last index of data received
 
-let port = null;
-// let dataRows = [];
 const savedData = [];
 
 let highlightedRow = null;
@@ -25,52 +21,10 @@ function decodeAscii(data) {
     return data.split(',').map(value => String.fromCharCode(parseInt(value))).join('');
 }
 
-async function connectToArduino() {
-    try {
-        statusMessage.textContent = 'Connecting...';
-        port = await navigator.serial.requestPort();
-        await port.open({ baudRate: 9600 });  // Adjust baudRate as needed
-        connectBtn.disabled = true;
-        disconnectBtn.disabled = false;
-        sendBtn.disabled = false;
-        generateTableBtn.disabled = false;
-        statusMessage.textContent = 'Connected to Arduino';
-
-        reader = port.readable.getReader();
-        const textDecoder = new TextDecoder(); // Create a TextDecoder instance
-
-        while (true) {
-            const { value, done } = await reader.read();
-            if (done) {
-                break;
-            }
-
-            // Convert the Uint8Array to a string using the TextDecoder
-            const decodedData = textDecoder.decode(value);
-
-            serialDataDisplay.textContent = `Received: ${decodedData}`;
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        statusMessage.textContent = 'Connection failed';
-        setTimeout(() => {
-            statusMessage.textContent = '';
-        }, 3000);  // Clear the status message after 3 seconds
-    }
-}
-
-async function sendDataToArduino() {
-    try {
-        const writer = port.writable.getWriter();
-        const selectedValue = byteValueSelect.value;
-        const dataToSend = String.fromCharCode(selectedValue);
-        await writer.write(new TextEncoder().encode(dataToSend));
-        writer.releaseLock();
-
-        byteValueDisplay.textContent = `Sent Byte: 0x${selectedValue.toString(16).toUpperCase()}`;
-    } catch (error) {
-        console.error('Error:', error);
-    }
+function updateConsole(value) {
+    const currentTime = new Date().toLocaleTimeString(); // Get current time
+    serialDataConsole.value += `[${currentTime}] ${value} \n`;
+    serialDataConsole.scrollTop = serialDataConsole.scrollHeight;
 }
 
 function validateValues() {
@@ -108,24 +62,39 @@ function generateTable() {
 
     // Create cells for each value
     const inputCell1 = document.createElement('td');
-    const inputField1 = document.createElement('input');
-    inputField1.value = rowData.input1;
-    inputField1.classList.add('editable-field');
-    inputField1.setAttribute('readonly', true);
-    inputCell1.appendChild(inputField1);
-    newRow.appendChild(inputCell1);
+    inputCell1.setAttribute('data-field', 'input1');
+    inputCell1.classList.add('editable-field');
+    inputCell1.textContent = rowData.input1;
     
+    // const inputField1 = document.createElement('input');
+    // inputField1.value = rowData.input1;
+    // inputField1.classList.add('editable-field');
+    // inputField1.setAttribute('readonly', true);
+    // inputField1.setAttribute('data-value', inputField1.value);
+    // inputField1.setAttribute('data-field', 'input1')
+    // inputCell1.appendChild(inputField1);
+    newRow.appendChild(inputCell1);
+
     const inputCell2 = document.createElement('td');
     inputCell2.textContent = rowData.input2;
-    inputCell2.classList.add('.editable-field');
+    
+    inputCell2.classList.add('editable-field');
+    inputCell2.setAttribute('data-field', 'input2');
+
     newRow.appendChild(inputCell2);
 
     const dropdownCell1 = document.createElement('td');
     dropdownCell1.textContent = rowData.dropdown1;
+    dropdownCell1.classList.add('editable-field');
+    dropdownCell1.setAttribute('data-field', 'dropdown1');
+
     newRow.appendChild(dropdownCell1);
 
     const dropdownCell2 = document.createElement('td');
+    dropdownCell2.setAttribute('data-field', 'dropdown2');
+
     dropdownCell2.textContent = rowData.dropdown2;
+    dropdownCell2.classList.add('editable-field');
     newRow.appendChild(dropdownCell2);
 
     // Create a cell for the remove button
@@ -158,13 +127,17 @@ function generateTable() {
     const editButtonCell = document.createElement('td');
     const editButton = document.createElement('button');
     editButton.classList.add('editButton');
+    editButton.classList.add('btn-primary');
+    editButton.classList.add('btn');
+
+    editButton.setAttribute('data-bs-toggle', "modal");
+    editButton.setAttribute("data-bs-target", "#editModal");
     editButton.textContent = 'Edit';
     editButton.addEventListener('click', () => {
-        toggleEditableState(newRow);
+        openEditModal(newRow);
     });
     editButtonCell.appendChild(editButton);
     newRow.appendChild(editButtonCell);
-
 
     // Append the new row to the table body
     dataRows.appendChild(newRow);
@@ -185,6 +158,10 @@ function toggleEditableState(row) {
             } else {
                 field.setAttribute('data-value', field.value);
                 field.setAttribute('readonly', true);
+
+                const rowIndex = Array.from(row.parentNode.children).indexOf(row);
+                const fieldName = field.getAttribute('data-field');
+                savedData[rowIndex][fieldName] = field.value;
             }
         } else if (field.tagName === 'SELECT') {
             if (editButton.textContent === 'Edit') {
@@ -207,9 +184,7 @@ function removeTableRow(row, rowData) {
     if (indexToRemove !== -1) {
         savedData.splice(indexToRemove, 1);
     }
-
 }
-
 
 async function disconnectSerial() {
     try {
@@ -226,19 +201,52 @@ async function disconnectSerial() {
         connectBtn.disabled = false;
         disconnectBtn.disabled = true;
         sendBtn.disabled = true;
-        // generateTableBtn.disabled = true;
-        statusMessage.textContent = '';
-        byteValueDisplay.textContent = '';
-        serialDataDisplay.textContent = '';
-        // dataTable.style.display = 'none';
-        // dataRows.forEach(row => row.remove());
-        // dataRows = [];
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
+const editModal = document.getElementById('editModal');
+const saveChangesBtn = document.getElementById('saveChangesBtn');
+
+let selectedRowData = null;
+
+function openEditModal(rowData) {
+    selectedRowData = rowData;
+    console.log(rowData);
+    data = getSavedDataFromRow(rowData);
+
+    // Populate modal inputs with selected row data
+    document.getElementById('editinput1').value = data['input1'];
+    document.getElementById('editinput2').value = data['input2'];
+    document.getElementById('editdropdown1').value = data['dropdown1'];
+    document.getElementById('editdropdown2').value = data['dropdown2'];
+}
+
+function getSavedDataFromRow(row) {
+    const rowIndex = Array.from(row.parentNode.children).indexOf(row);
+    return savedData[rowIndex];
+}
+
+saveChangesBtn.addEventListener('click', () => {
+    if (selectedRowData) {
+        data = getSavedDataFromRow(selectedRowData);
+
+        data['input1'] = document.getElementById('editinput1').value;
+        data['input2'] = document.getElementById('editinput2').value;
+        data['dropdown1'] = document.getElementById('editdropdown1').value;
+        data['dropdown2'] = document.getElementById('editdropdown2').value;
+
+        const tdElements = selectedRowData.querySelectorAll('td.editable-field');
+
+        tdElements.forEach(td => {
+            const dataField = td.getAttribute('data-field');
+            td.textContent = data[dataField];
+        });
+    }
+});
+
 connectBtn.addEventListener('click', connectToArduino);
-sendBtn.addEventListener('click', sendDataToArduino);
+sendBtn.addEventListener('click', sendDataToSerial);
 generateTableBtn.addEventListener('click', generateTable);
 disconnectBtn.addEventListener('click', disconnectSerial);
