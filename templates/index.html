@@ -27,6 +27,11 @@
             margin-right: 20px;
         }
 
+        .form-select {
+            padding: 0px;
+            margin: 0px;
+        }
+
         #dataTable {
             border-collapse: collapse;
         }
@@ -40,86 +45,36 @@
 </head>
 
 <body>
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="editModalLabel">Edit Row</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="inputs">
-                    <label for="input1">Input 1:</label>
-                    <input type="number" id="editinput1" placeholder="Enter an integer"><br>
-                    <label for="input2">Input 2:</label>
-                    <input type="number" id="editinput2" placeholder="Enter another integer"><br>
-                    <label for="dropdown1">Dropdown 1:</label>
-                    <select class="form-select" id="editdropdown1">
-                        <option value="option1">Option 1</option>
-                        <option value="option2">Option 2</option>
-                        <option value="option3">Option 3</option>
-                    </select><br>
-                    <label for="dropdown2">Dropdown 2:</label>
-                    <select class="form-select" id="editdropdown2">
-                        <option value="optionA">Option A</option>
-                        <option value="optionB">Option B</option>
-                        <option value="optionC">Option C</option>
-                    </select><br>
-                    
-                    <p id="editerrorMessage" style="color: red;"></p>
-                </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
-            </div>
-          </div>
-        </div>
-      </div>
+    {% include 'modal_template.html' %}
 
     <div class="row" style="padding-left: 20px; padding-top: 50px;">
         <div class="col-sm-3 mb-2 mb-sm-0">
-            <div class="card" style="padding: 15px;">
-                <button id="connectBtn" type="button" class="btn btn-primary" style="margin: 5px;">Connect to
-                    Arduino</button>
-                <button id="disconnectBtn" type="button" class="btn btn-primary" style="margin: 5px;"
-                    disabled>Disconnect</button>
-                <button id="sendBtn" type="button" class="btn btn-primary" style="margin: 5px;" disabled>Send Data</button>
-                <select class="form-select" id="byteValue">
-                    <option value="01">Byte Value 01</option>
-                    <option value="00">Byte Value 00</option>
-                    <option value="02">Byte Value 02</option>
-                </select>
-                <div id="console" class="card bg-dark console">
-                    <textarea id="consoleOutput" class="bg-dark text-light" rows="10" readonly></textarea>
-                </div>
-                
-            </div>
+            {% include 'console_template.html' %}
         </div>
 
         <div class="col-sm-3">
-            <div class="card" >
+            <div class="card">
                 <h5 class="card-header text-center">New Task</h5>
-                <div class="inputs " style="padding: 15px;">
+                <form action="{{ url_for('add_task') }}" method="POST" class="inputs " style="padding: 15px;">
                     <label for="input1">Input 1:</label>
-                    <input type="text" id="input1" class="form-control" placeholder="Enter a task name"><br>
+                    <input name="task_name" type="text" id="input1" class="form-control" placeholder="Enter a task name"><br>
                     <label for="input2">Input 2:</label>
-                    <input type="number" id="input2" class="form-control" placeholder="Enter another integer"><br>
-                    <label for="dropdown1">Dropdown 1:</label>
-                    <select class="form-select" id="dropdown1">
+                    <input name="duration_minutes" type="number" id="input2" class="form-control" placeholder="Enter another integer"><br>
+                    <label  for="dropdown1">Dropdown 1:</label>
+                    <select name="category" class="form-select" id="dropdown1">
                         <option value="option1">Option 1</option>
                         <option value="option2">Option 2</option>
                         <option value="option3">Option 3</option>
                     </select><br>
                     <label for="dropdown2">Dropdown 2:</label>
-                    <select class="form-select" id="dropdown2">
+                    <select name="priority" class="form-select" id="dropdown2">
                         <option value="optionA">Option A</option>
                         <option value="optionB">Option B</option>
                         <option value="optionC">Option C</option>
                     </select><br>
-                    <button id="generateTableBtn">Generate Table</button>
+                    <button type="submit" id="generateTableBtn">Generate Table</button>
                     <p id="errorMessage" style="color: red;"></p>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -142,7 +97,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
         crossorigin="anonymous"></script>
-        <script src="http://localhost:35729/livereload.js"></script>
+    <script src="http://localhost:35729/livereload.js"></script>
 </body>
 
 </html>

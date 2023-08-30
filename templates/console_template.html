@@ -1,0 +1,19 @@
+<div class="card" style="padding: 15px;">
+    <div class="btn-group">
+        <button id="connectBtn" type="button" class="btn btn-primary">Connect</button>
+        <button id="disconnectBtn" type="button" class="btn btn-primary" disabled>Disconnect</button>
+    </div>
+    <br>
+    <div class="card btn-group-sm">
+        <button id="sendBtn" type="button" class="btn btn-primary" disabled>Send Data</button>
+        <select class="btn form-select card-footer" id="byteValue">
+            <option value="01">Byte Value 01</option>
+            <option value="00">Byte Value 00</option>
+            <option value="02">Byte Value 02</option>
+        </select>
+    </div>
+    <br>
+    <div id="console" class="card bg-dark console">
+        <textarea id="consoleOutput" class="bg-dark text-light" rows="10" readonly></textarea>
+    </div>
+</div>

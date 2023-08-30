@@ -1,0 +1,36 @@
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Edit Row</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="inputs">
+                <label for="input1">Input 1:</label>
+                <input type="number" id="editinput1" placeholder="Enter an integer"><br>
+                <label for="input2">Input 2:</label>
+                <input type="number" id="editinput2" placeholder="Enter another integer"><br>
+                <label for="dropdown1">Dropdown 1:</label>
+                <select class="form-select" id="editdropdown1">
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                    <option value="option3">Option 3</option>
+                </select><br>
+                <label for="dropdown2">Dropdown 2:</label>
+                <select class="form-select" id="editdropdown2">
+                    <option value="optionA">Option A</option>
+                    <option value="optionB">Option B</option>
+                    <option value="optionC">Option C</option>
+                </select><br>
+                
+                <p id="editerrorMessage" style="color: red;"></p>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
