@@ -1,0 +1,19 @@
+<div style="display: none;">
+    <!-- it needs this table tag else it will auto remove the tr tag -->
+    <table> 
+        <tr id="taskRowTemplate">
+            <td class="checkboxCell"><input class="big-checkbox" type="checkbox" value="" id="doneField"></td>
+            <td data-field="taskName" class="editable-field">ghii</td>
+            <td data-field="duration" class="editable-field">22</td>
+            <td data-field="category" class="editable-field">option1</td>
+            <td data-field="priority" class="editable-field">optionA</td>
+            <td>
+                <div class="btn-group table-btn-grp">
+                    <button id="removeBtn" class="btn-danger btn">Remove</button>
+                    <button id="editBtn" class="btn-primary btn" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                    <button id="selectBtn" class="btn-primary btn">Select</button>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>

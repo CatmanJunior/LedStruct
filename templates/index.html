@@ -4,18 +4,36 @@
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <title>Web Serial Communication</title>
+    <title>Terrible Task App</title>
     <style>
-        /* Add CSS styling here */
-        /* .container {
+        .big-checkbox-container {
             display: flex;
-            align-items: flex-start;
-        } */
-        .editable-field {
-            border: 1px solid #ccc;
-            padding: 4px;
-            width: 50px;
-            background-color: white;
+            align-items: center;
+            height: 100%;
+        }
+
+        .checkboxCell {
+            height: 70px;
+            /* Set the height of the cell */
+            vertical-align: middle;
+            /* Vertically center content
+            border: 1px solid black; */
+        }
+
+        #dataRows>tr>td {
+            vertical-align: middle;
+        }
+
+        .big-checkbox {
+            margin: 10px !important;
+            padding-left: 50px;
+            transform: scale(4);
+            display: inline-block;
+        }
+
+        .taskHeader {
+            padding-left: 50px;
+            min-width: 50px;
         }
 
         .editable-field[readonly] {
@@ -23,81 +41,97 @@
             cursor: not-allowed;
         }
 
+        .taskRowsBody {
+
+            align-items: center;
+            height: 100%;
+            vertical-align: middle;
+        }
+
+        .table-btn-grp {
+            height: 100%;
+            align-items: center;
+
+            /* Set the height of the cell */
+            vertical-align: middle;
+        }
+
         .inputs {
             margin-right: 20px;
+            vertical-align: middle;
         }
 
-        .form-select {
-            padding: 0px;
-            margin: 0px;
-        }
 
-        #dataTable {
+        /* #dataTable {
             border-collapse: collapse;
-        }
-
+        } */
+        /* 
         #dataTable th,
         #dataTable td {
             border: 1px solid black;
             padding: 8px;
-        }
+        } */
     </style>
 </head>
 
 <body>
     {% include 'modal_template.html' %}
+    {% include 'taskRow_template.html' %}
 
     <div class="row" style="padding-left: 20px; padding-top: 50px;">
-        <div class="col-sm-3 mb-2 mb-sm-0">
+        <!-- <div class="col-sm-3 mb-2 mb-sm-0">
             {% include 'console_template.html' %}
-        </div>
+        </div> -->
 
         <div class="col-sm-3">
             <div class="card">
                 <h5 class="card-header text-center">New Task</h5>
-                <form action="{{ url_for('add_task') }}" method="POST" class="inputs " style="padding: 15px;">
-                    <label for="input1">Input 1:</label>
-                    <input name="task_name" type="text" id="input1" class="form-control" placeholder="Enter a task name"><br>
-                    <label for="input2">Input 2:</label>
-                    <input name="duration_minutes" type="number" id="input2" class="form-control" placeholder="Enter another integer"><br>
-                    <label  for="dropdown1">Dropdown 1:</label>
-                    <select name="category" class="form-select" id="dropdown1">
-                        <option value="option1">Option 1</option>
-                        <option value="option2">Option 2</option>
-                        <option value="option3">Option 3</option>
+                <form id="newTaskForm" class="inputs " style="padding: 15px;">
+                    <label for="taskNameField">Input 1:</label>
+                    <input name="task_name" type="text" id="taskNameField" class="form-control"
+                        placeholder="Enter a task name"><br>
+                    <label for="durationField">Input 2:</label>
+                    <input name="duration_minutes" type="number" id="durationField" class="form-control"
+                        placeholder="Enter another integer"><br>
+                    <label for="categoryField">Dropdown 1:</label>
+                    <select name="category" data-field="category" class="form-select" id="categoryField">
+
                     </select><br>
-                    <label for="dropdown2">Dropdown 2:</label>
-                    <select name="priority" class="form-select" id="dropdown2">
+                    <label for="priorityField">Dropdown 2:</label>
+                    <select name="priority" class="form-select" id="priorityField">
                         <option value="optionA">Option A</option>
                         <option value="optionB">Option B</option>
                         <option value="optionC">Option C</option>
                     </select><br>
-                    <button type="submit" id="generateTableBtn">Generate Table</button>
+                    <button type="submit" class="btn btn-primary">Save Task</button>
                     <p id="errorMessage" style="color: red;"></p>
                 </form>
+                <button id="generateTableBtn">Generate Table</button>
+
             </div>
         </div>
 
-        <div class="col-sm-5">
+        <div class="col-sm-6">
             <div class="card" style="padding: 15px;">
-                <table class="table" id="dataTable">
-                    <tr>
+                <table class="table table-sm table-responsive" id="dataTable">
+                    <tr style="padding-left: 50px !important">
+                        <th class="taskHeader"></th>
                         <th>Input 1</th>
-                        <th>Input 2</th>
-                        <th>Dropdown 1</th>
+                        <th>Input 2 </th>
+                        <th>Dropdown 1<br> <select name="category" data-field="category" class="form-select" id="categoryFilter"></select></th>
                         <th>Dropdown 2</th>
                     </tr>
-                    <tbody id="dataRows"></tbody>
+                    <tbody id="dataRows" class="taskRowsBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='connection.js') }}"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
         crossorigin="anonymous"></script>
     <script src="http://localhost:35729/livereload.js"></script>
+
 </body>
 
 </html>
