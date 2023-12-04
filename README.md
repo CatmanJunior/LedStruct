@@ -1,4 +1,4 @@
-```markdown
+
 # Flask Application
 
 This is a Flask application that uses SQLAlchemy for database operations and Flask-WTF for form handling.
@@ -6,7 +6,7 @@ This is a Flask application that uses SQLAlchemy for database operations and Fla
 ## Installation 
 
 Clone the repository and install the required packages using pip:
-```
+
 
 ```bash
 git clone <repository_url>
