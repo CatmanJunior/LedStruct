@@ -1,0 +1,53 @@
+.big-checkbox-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.checkboxCell {
+    height: 70px;
+    vertical-align: middle;
+}
+
+#dataRows>tr>td {
+    vertical-align: middle;
+}
+
+.big-checkbox {
+    margin-left: 20px !important;
+    margin-right: 25px;
+
+    transform: scale(4);
+    display: inline-block;
+}
+
+.taskHeader {
+    padding-left: 50px;
+    min-width: 50px;
+}
+
+.editable-field[readonly] {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.taskRowsBody {
+
+    align-items: center;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.table-btn-grp {
+    height: 100%;
+    align-items: center;
+
+    /* Set the height of the cell */
+    vertical-align: middle;
+}
+
+.inputs {
+    margin-right: 20px;
+    vertical-align: middle;
+}
+

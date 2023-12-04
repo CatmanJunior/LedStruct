@@ -4,122 +4,78 @@
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
     <title>Terrible Task App</title>
     <style>
-        .big-checkbox-container {
-            display: flex;
-            align-items: center;
-            height: 100%;
-        }
 
-        .checkboxCell {
-            height: 70px;
-            /* Set the height of the cell */
-            vertical-align: middle;
-            /* Vertically center content
-            border: 1px solid black; */
-        }
-
-        #dataRows>tr>td {
-            vertical-align: middle;
-        }
-
-        .big-checkbox {
-            margin: 10px !important;
-            padding-left: 50px;
-            transform: scale(4);
-            display: inline-block;
-        }
-
-        .taskHeader {
-            padding-left: 50px;
-            min-width: 50px;
-        }
-
-        .editable-field[readonly] {
-            background-color: #f5f5f5;
-            cursor: not-allowed;
-        }
-
-        .taskRowsBody {
-
-            align-items: center;
-            height: 100%;
-            vertical-align: middle;
-        }
-
-        .table-btn-grp {
-            height: 100%;
-            align-items: center;
-
-            /* Set the height of the cell */
-            vertical-align: middle;
-        }
-
-        .inputs {
-            margin-right: 20px;
-            vertical-align: middle;
-        }
-
-
-        /* #dataTable {
-            border-collapse: collapse;
-        } */
-        /* 
-        #dataTable th,
-        #dataTable td {
-            border: 1px solid black;
-            padding: 8px;
-        } */
     </style>
 </head>
 
 <body>
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" display="none" id="toast">
+        <div class="toast-header">
+            <img src="..." class="rounded me-2" alt="...">
+            <strong class="me-auto">Bootstrap</strong>
+            <small>11 mins ago</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Hello, world! This is a toast message.
+        </div>
+    </div>
+
+
     {% include 'modal_template.html' %}
     {% include 'taskRow_template.html' %}
-
+    {% include 'addCategory_modal.html' %}
     <div class="row" style="padding-left: 20px; padding-top: 50px;">
-        <!-- <div class="col-sm-3 mb-2 mb-sm-0">
-            {% include 'console_template.html' %}
-        </div> -->
-
         <div class="col-sm-3">
             <div class="card">
                 <h5 class="card-header text-center">New Task</h5>
                 <form id="newTaskForm" class="inputs " style="padding: 15px;">
-                    <label for="taskNameField">Input 1:</label>
+                    <label for="taskNameField">Task name:</label>
                     <input name="task_name" type="text" id="taskNameField" class="form-control"
                         placeholder="Enter a task name"><br>
-                    <label for="durationField">Input 2:</label>
+                    <label for="durationField">Estimated duration:</label>
                     <input name="duration_minutes" type="number" id="durationField" class="form-control"
                         placeholder="Enter another integer"><br>
-                    <label for="categoryField">Dropdown 1:</label>
+                    <label for="categoryField">Category:</label>
                     <select name="category" data-field="category" class="form-select" id="categoryField">
 
                     </select><br>
-                    <label for="priorityField">Dropdown 2:</label>
+                    <!-- Button to trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addCategoryModal">
+                        Add Category
+                    </button>
+
+                    <br><br>
+                    <label for="priorityField">Priority:</label>
                     <select name="priority" class="form-select" id="priorityField">
-                        <option value="optionA">Option A</option>
-                        <option value="optionB">Option B</option>
-                        <option value="optionC">Option C</option>
+                        <option value="optionA">Low</option>
+                        <option value="optionB">Mid</option>
+                        <option value="optionC">High</option>
                     </select><br>
                     <button type="submit" class="btn btn-primary">Save Task</button>
                     <p id="errorMessage" style="color: red;"></p>
                 </form>
-                <button id="generateTableBtn">Generate Table</button>
-
             </div>
         </div>
 
         <div class="col-sm-6">
-            <div class="card" style="padding: 15px;">
+            <div class="card">
                 <table class="table table-sm table-responsive" id="dataTable">
-                    <tr style="padding-left: 50px !important">
+                    <tr>
                         <th class="taskHeader"></th>
-                        <th>Input 1</th>
-                        <th>Input 2 </th>
-                        <th>Dropdown 1<br> <select name="category" data-field="category" class="form-select" id="categoryFilter"></select></th>
-                        <th>Dropdown 2</th>
+                        <th>Task</th>
+                        <th>Duration</th>
+                        <th>Category<br>
+                            <select name="category" data-field="category" class="form-select" id="categoryFilter">
+                                <option value="all">all</option>
+                            </select>
+                        </th>
+                        <th>Priority</th>
+                        <th>Time worked</th>
                     </tr>
                     <tbody id="dataRows" class="taskRowsBody"></tbody>
                 </table>

@@ -1,17 +1,55 @@
 <div style="display: none;">
     <!-- it needs this table tag else it will auto remove the tr tag -->
-    <table> 
+    <table>
         <tr id="taskRowTemplate">
             <td class="checkboxCell"><input class="big-checkbox" type="checkbox" value="" id="doneField"></td>
-            <td data-field="taskName" class="editable-field">ghii</td>
-            <td data-field="duration" class="editable-field">22</td>
-            <td data-field="category" class="editable-field">option1</td>
-            <td data-field="priority" class="editable-field">optionA</td>
+            <td data-field="taskName" class="editable-field">TASKNAME</td>
+            <td data-field="duration" class="editable-field">DURATION</td>
+            <td data-field="category" class="editable-field">CATEGORY</td>
+            <td data-field="priority" class="editable-field">PRIORITY</td>
+            <td data-field="timeWorked" class="editable-field">00:00</td>
+            
             <td>
-                <div class="btn-group table-btn-grp">
-                    <button id="removeBtn" class="btn-danger btn">Remove</button>
-                    <button id="editBtn" class="btn-primary btn" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
-                    <button id="selectBtn" class="btn-primary btn">Select</button>
+                <div class="btn-toolbar">
+                    <div class="btn-group table-btn-grp">
+                        <button id="playBtn" class="btn-success btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M16.6582 9.28638C18.098 10.1862 18.8178 10.6361 19.0647 11.2122C19.2803 11.7152 19.2803 12.2847 19.0647 12.7878C18.8178 13.3638 18.098 13.8137 16.6582 14.7136L9.896 18.94C8.29805 19.9387 7.49907 20.4381 6.83973 20.385C6.26501 20.3388 5.73818 20.0469 5.3944 19.584C5 19.053 5 18.1108 5 16.2264V7.77357C5 5.88919 5 4.94701 5.3944 4.41598C5.73818 3.9531 6.26501 3.66111 6.83973 3.6149C7.49907 3.5619 8.29805 4.06126 9.896 5.05998L16.6582 9.28638Z"
+                                    stroke="#eee" stroke-width="2" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+
+                        <button id="removeBtn" class="btn-danger btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M18 6L17.1991 18.0129C17.129 19.065 17.0939 19.5911 16.8667 19.99C16.6666 20.3412 16.3648 20.6235 16.0011 20.7998C15.588 21 15.0607 21 14.0062 21H9.99377C8.93927 21 8.41202 21 7.99889 20.7998C7.63517 20.6235 7.33339 20.3412 7.13332 19.99C6.90607 19.5911 6.871 19.065 6.80086 18.0129L6 6M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6M14 10V17M10 10V17"
+                                    stroke="#EEE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+
+                        </button>
+
+                        <button id="editBtn" class="btn-primary btn" data-bs-toggle="modal" data-bs-target="#editModal">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M8.56078 20.2501L20.5608 8.25011L15.7501 3.43945L3.75012 15.4395V20.2501H8.56078ZM15.7501 5.56077L18.4395 8.25011L16.5001 10.1895L13.8108 7.50013L15.7501 5.56077ZM12.7501 8.56079L15.4395 11.2501L7.93946 18.7501H5.25012L5.25012 16.0608L12.7501 8.56079Z"
+                                    fill="#EEE" />
+                            </svg>
+                        </button>
+                        <button id="selectBtn" class="btn-primary btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <g id="Edit / Select_Multiple">
+                                    <path id="Vector"
+                                        d="M3 9V19.4C3 19.9601 3 20.2399 3.10899 20.4538C3.20487 20.642 3.35774 20.7952 3.5459 20.8911C3.7596 21 4.0395 21 4.59846 21H15.0001M17 8L13 12L11 10M7 13.8002V6.2002C7 5.08009 7 4.51962 7.21799 4.0918C7.40973 3.71547 7.71547 3.40973 8.0918 3.21799C8.51962 3 9.08009 3 10.2002 3H17.8002C18.9203 3 19.4801 3 19.9079 3.21799C20.2842 3.40973 20.5905 3.71547 20.7822 4.0918C21.0002 4.51962 21.0002 5.07969 21.0002 6.19978L21.0002 13.7998C21.0002 14.9199 21.0002 15.48 20.7822 15.9078C20.5905 16.2841 20.2842 16.5905 19.9079 16.7822C19.4805 17 18.9215 17 17.8036 17H10.1969C9.07899 17 8.5192 17 8.0918 16.7822C7.71547 16.5905 7.40973 16.2842 7.21799 15.9079C7 15.4801 7 14.9203 7 13.8002Z"
+                                        stroke="#EEE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </g>
+                            </svg></button>
+
+                    </div>
                 </div>
             </td>
         </tr>

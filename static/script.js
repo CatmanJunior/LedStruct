@@ -18,75 +18,105 @@ let highlightedRow = null; //Row that is selected by pressing select button
 const categories = [];
 const savedData = [];
 
-// Send an AJAX request to Flask to get the task data
-fetch('/get_tasks')
-    .then(response => response.json())
-    .then(data => {
-        // Process the data
+function formatTime(minutes, seconds) {
+    const paddedMinutes = minutes.toString().padStart(2, "0");
+    const paddedSeconds = seconds.toString().padStart(2, "0");
+    return `${paddedMinutes}:${paddedSeconds}`;
+}
+
+function parseTime(formattedTime) {
+    const [minutes, seconds] = formattedTime.split(":").map(Number);
+    return { minutes, seconds };
+}
+
+async function fetchData() {
+    try {
+        const response = await fetch('/get_tasks');
+        const data = await response.json();
+
+        console.log(data);
         data.forEach(task => {
-            const rowData = {
+            const taskData = {
+                id: task.id,
                 taskName: task.task_name,
                 duration: task.duration_minutes,
                 category: task.category,
-                priority: task.priority
+                priority: task.priority,
+                taskDone: task.task_done,
+                startTime: new Date().getTime(),
+                timeWorked: "00:00",
+                timerInterval: null
             };
-            //generate a row for each task
-            generateRow(rowData);
-            //and push it to the local saved data
-            savedData.push(rowData);
-        });
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
 
-// Send an AJAX request to Flask to get the unique categories
-fetch('/get_unique_categories')
-    .then(response => response.json())
-    .then(data => {
+            generateRow(taskData);
+            savedData.push(taskData);
+        });
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+
+fetchData();
+
+
+async function fetchUniqueCategories() {
+    try {
+        const response = await fetch('/get_unique_categories');
+        const data = await response.json();
         const categorySelects = document.querySelectorAll('select[data-field="category"]');
         data.forEach(category => {
             categorySelects.forEach(select => { addOptionToDropdown(select, category); });
             categories.push(category);
         });
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error:', error);
-    });
+    }
+}
 
-taskForm.addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent default form submission
+fetchUniqueCategories();
 
-    const form = event.target;
-    const formData = new FormData(form);
+taskForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-    fetch('/add_task', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Task added:', data);
-            // Optionally, update the UI here (e.g., show a success message)
-        })
-        .catch(error => {
-            console.error('Error adding task:', error);
-            // Optionally, handle error scenario here
+    const formData = new FormData(taskForm);
+
+    try {
+        const response = await fetch('/add_task', {
+            method: 'POST',
+            body: formData
         });
+
+        const data = await response.json();
+        // Get the snackbar element
+        const toast = document.getElementById('toast');
+
+        // Add a class to the snackbar to show it
+        toast.setAttribute('display', 'block');
+
+        // Remove the class after 3 seconds
+        setTimeout(() => {
+            toast.setAttribute('display', 'none');
+        }, 3000);
+    } catch (error) {
+        console.error('Error adding task:', error);
+
+    }
 });
 
 //Filter all elements by selectorvalue
 document.getElementById('categoryFilter').addEventListener('change', function () {
     dataRows.querySelectorAll('tr').forEach(row => {
-        if (row.querySelector('[data-field="category"]').textContent === categoryFilter.value) {
+        dataField = row.querySelector('[data-field="category"]')
+        if (dataField.textContent === categoryFilter.value) {
             row.style.display = ''; // Show the row
+        } else if (categoryFilter.value === 'all') {
+            row.style.display = ''; // Hide the row
         } else {
-            row.style.display = 'none'; // Hide the row
+            row.style.display = 'none'; // Hide the row            
         }
     });
 });
-
-
 
 saveChangesBtn.addEventListener('click', () => {
     if (editingRowData) {
@@ -98,13 +128,23 @@ saveChangesBtn.addEventListener('click', () => {
         data['priority'] = document.getElementById('editdropdown2').value;
 
         const tdElements = editingRowData.querySelectorAll('td.editable-field');
-
+        updateTask(data['id'], data);
         tdElements.forEach(td => {
             const dataField = td.getAttribute('data-field');
             td.textContent = data[dataField];
         });
     }
 });
+
+const saveCategoryBtn = document.getElementById('saveCategoryBtn');
+saveCategoryBtn.addEventListener('click', function () {
+    // Get the category name input value
+    const categoryName = document.getElementById('categoryName').value;
+
+    addOptionToDropdown(categoryField, categoryName);
+
+});
+
 
 function addOptionToDropdown(dropdown, value) {
     // Create and append a new <option> element
@@ -129,55 +169,149 @@ function validateValues() {
     errorMessage.textContent = ''; // Clear error message
     return true;
 }
+function removeTask(taskId) {
+    fetch(`/remove_task/${taskId}`, {
+        method: 'DELETE',
+    })
+        .then(response => {
+            if (response.ok) {
+                // Task was successfully removed
+                console.log('Task removed successfully');
+                // You can update the UI or take other actions as needed
+            } else {
+                // Task removal failed (e.g., task not found)
+                console.error('Failed to remove task');
+                // Handle the error or display an error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Handle the network error
+        });
+}
 
+function toggleTaskStatus(taskId, taskStatus) {
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ taskStatus }),
+    };
+
+    fetch(`/toggle_task/${taskId}`, requestOptions)
+        .then(response => {
+            if (response.ok) {
+                console.log('Task status updated successfully');
+            } else {
+                return response.json().then(data => {
+                    throw new Error(data.error);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+        });
+}
+
+function updateTask(taskId, updatedData) {
+    fetch(`/update_task/${taskId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+    })
+        .then(response => {
+            if (response.ok) {
+                console.log('Task updated successfully');
+                // Handle success as needed (e.g., update UI)
+            } else {
+                console.error('Failed to update task');
+                // Handle errors (e.g., display an error message)
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Handle network errors
+        });
+}
+
+function updateTimer(timerField, startTime, taskData) {
+    const currentTime = new Date().getTime();
+    const elapsedTime = Math.floor((currentTime - startTime) / 1000); // in seconds
+    let min = Math.floor(elapsedTime / 60);
+    let sec = elapsedTime % 60;
+    let { minutes, seconds } = parseTime(taskData.timeWorked);
+    minutes += min;
+    seconds += sec;
+    const formattedTime = formatTime(minutes, seconds);
+
+    // Update the timer display
+    timerField.textContent = formattedTime;
+}
 function generateRow(taskData) {
     const templateRow = document.getElementById('taskRowTemplate');
-    console.log(templateRow);
     const newRow = templateRow.cloneNode(true);
 
-    newRow.querySelector('[data-field="taskName"]').textContent = taskData.taskName;
-    newRow.querySelector('[data-field="duration"]').textContent = taskData.duration;
-    newRow.querySelector('[data-field="category"]').textContent = taskData.category;
-    newRow.querySelector('[data-field="priority"]').textContent = taskData.priority;
+    populateRowData(newRow, taskData);
+    attachEventListeners(newRow, taskData);
 
-    // checkboxInput.id = 'doneField';
-
-    newRow.querySelector('#removeBtn').addEventListener('click', () => removeTableRow(newRow, taskData)); // Pass rowData to the function
-
-    newRow.querySelector('#selectBtn').addEventListener('click', () => {
-        if (highlightedRow) {
-            highlightedRow.classList.remove('table-primary'); // Remove class from the previous row
-        }
-        newRow.classList.add('table-primary');
-        highlightedRow = newRow;
-    });
-
-    newRow.querySelector('#editBtn').addEventListener('click', () => openEditModal(newRow));
-
-    // Append the new row to the table body
     dataRows.appendChild(newRow);
-
-    // Display the table
     dataTable.style.display = 'table';
     return newRow;
 }
 
-function generateTable() {
-    if (!validateValues()) {
-        return; // Abort table generation if validation fails
-    }
+function populateRowData(newRow, taskData) {
+    const rowsToPopulate = ['taskName', 'duration', 'category', 'priority'];
+    Object.keys(taskData).forEach(key => {
+        if (rowsToPopulate.includes(key)) {
+            newRow.querySelector(`[data-field="${key}"]`).textContent = taskData[key];
+        }
+    });
 
-    const taskData = {
-        taskName: taskNameField.value,
-        duration: durationField.value,
-        category: categoryField.value,
-        priority: priorityField.value
-    };
-
-    savedData.push(taskData);
-    generateRow(taskData);
-
+    const checkbox = newRow.querySelector('#doneField');
+    checkbox.checked = taskData.taskDone;
+    newRow.setAttribute('task-id', taskData.id);
 }
+
+function attachEventListeners(newRow, taskData) {
+    newRow.querySelector('#doneField').addEventListener('change', () => toggleTaskStatus(taskData.id, EventTarget.checked));
+    newRow.querySelector('#removeBtn').addEventListener('click', () => removeTaskRow(newRow, taskData));
+    newRow.querySelector('#playBtn').addEventListener('click', () => startTaskTimer(newRow, taskData));
+    newRow.querySelector('#selectBtn').addEventListener('click', () => highlightTaskRow(newRow));
+    newRow.querySelector('#editBtn').addEventListener('click', () => openEditModal(newRow));
+}
+
+function removeTaskRow(newRow, taskData) {
+    removeTableRow(newRow, taskData);
+    removeTask(newRow.getAttribute('task-id'));
+}
+
+
+function startTaskTimer(newRow, taskData) {
+    const startTime = new Date().getTime();
+    taskData.startTime = startTime;
+    if (taskData.timerInterval) {
+        clearInterval(taskData.timerInterval);
+        taskData.timeWorked = newRow.querySelector(`[data-field="timeWorked"]`).textContent;
+        taskData.timerInterval = null;
+    } else {
+        const timerInterval = setInterval(() => {
+            updateTimer(newRow.querySelector(`[data-field="timeWorked"]`), startTime, taskData);
+        }, 1000);
+        taskData.timerInterval = timerInterval;
+    }
+}
+
+function highlightTaskRow(newRow) {
+    if (highlightedRow) {
+        highlightedRow.classList.remove('table-primary');
+    }
+    newRow.classList.add('table-primary');
+    highlightedRow = newRow;
+}
+
 
 function removeTableRow(row, taskData) {
     // Remove the row from the HTML table
@@ -190,17 +324,23 @@ function removeTableRow(row, taskData) {
     }
 }
 
+
 function openEditModal(rowData) {
-    editingRowData = rowData;
-    console.log(rowData);
-    data = getSavedDataFromRow(rowData);
+    const editingRowData = rowData;
+    const taskData = getSavedDataFromRow(editingRowData);
 
     // Populate modal inputs with selected row data
+    populateModalInputs(taskData);
+}
+
+function populateModalInputs(data) {
+    document.getElementById('editFinishedCheckbox').checked = data['taskDone'];
     document.getElementById('editinput1').value = data['taskName'];
     document.getElementById('editinput2').value = data['duration'];
     document.getElementById('editdropdown1').value = data['category'];
     document.getElementById('editdropdown2').value = data['priority'];
 }
+
 
 function getSavedDataFromRow(row) {
     const rowIndex = Array.from(row.parentNode.children).indexOf(row);
