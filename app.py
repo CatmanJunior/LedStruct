@@ -1,5 +1,8 @@
 """
 This is the main file for the Flask app. It contains the routes and the main function.
+To run the app, run this file with python. 
+python app.py
+it will run on localhost:5000
 """
 
 from flask import Flask, render_template
@@ -7,7 +10,6 @@ from livereload import Server
 from livereload.watcher import Watcher
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
-from flask_sqlalchemy import SQLAlchemy
 from models import db, User, Task, create_tables
 from database_routes import database_bp  # Import the Blueprint
 
@@ -30,10 +32,6 @@ class MyForm(FlaskForm):
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/swipe')
-def swipe():
-    return render_template('taskSwiper.html')
 
 @app.route('/form', methods=['GET', 'POST']) 
 def form():
