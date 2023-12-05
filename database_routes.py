@@ -5,6 +5,14 @@ database_bp = Blueprint('database_bp', __name__)
 
 @database_bp.route('/add_task', methods=['POST'])
 def add_task():
+    '''
+    This route adds a task to the database.
+    It expects the following data in the request body:
+    - task_name : String
+    - duration_minutes : Integer
+    - category : String
+    - priority : String
+    '''
     task_name = request.form.get('task_name')
     duration_minutes = int(request.form.get('duration_minutes'))
     category = request.form.get('category')
@@ -17,6 +25,10 @@ def add_task():
 
 @database_bp.route('/get_tasks')
 def get_tasks():
+    '''
+    This route returns all tasks from the database.
+    Returns a list of dictionaries. Each dictionary represents a task.
+    '''
     tasks = Task.query.all()  # Fetch all tasks from the database
     task_list = [
         {
@@ -32,7 +44,10 @@ def get_tasks():
     return jsonify(task_list)
 
 @database_bp.route('/update_task/<int:task_id>', methods=['PUT'])
-def update_task(task_id):
+def update_task(task_id: int):
+    '''
+    This route updates a task in the database.
+    '''
     task = Task.query.get(task_id)
 
     if task is None:
@@ -50,12 +65,18 @@ def update_task(task_id):
 
 @database_bp.route('/get_unique_categories')
 def get_unique_categories():
+    '''
+    This route returns all unique categories from the database.
+    '''
     unique_categories = Task.query.with_entities(Task.category).distinct().all()
     unique_categories = [category[0] for category in unique_categories]
     return jsonify(unique_categories)
 
 @database_bp.route('/remove_task/<int:task_id>', methods=['DELETE'])
-def remove_task(task_id):
+def remove_task(task_id: int):
+    '''
+    This route removes a task from the database.
+    '''
     task = Task.query.get(task_id)
     
     if task:
@@ -66,7 +87,10 @@ def remove_task(task_id):
         return jsonify(message="Task not found"), 404
 
 @database_bp.route('/toggle_task/<int:task_id>', methods=['POST'])
-def toggle_task_done(task_id):
+def toggle_task_done(task_id: int):
+    '''
+    This route toggles the is_done status of a task in the database.
+    '''
     task = Task.query.get(task_id)
     if task:
         task.is_done = not task.is_done
@@ -76,6 +100,9 @@ def toggle_task_done(task_id):
 
 @database_bp.cli.command("clear_db")
 def clear_database_entries():
+    '''
+    This command deletes all entries from the database.
+    '''
     try:
         db.session.query(Task).delete()
         db.session.commit()

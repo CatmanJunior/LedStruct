@@ -1,4 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+"""
+This is the main file for the Flask app. It contains the routes and the main function.
+"""
+
+from flask import Flask, render_template
 from livereload import Server
 from livereload.watcher import Watcher
 from flask_wtf import FlaskForm
