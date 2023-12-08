@@ -15,11 +15,27 @@ body {
 .task-list ul {
     list-style: none;
     padding: 0;
+
 }
 
 .task-list li {
+    padding: 25px 15px;
     margin-bottom: 10px;
-    font-size: 18px;
+
+    border-radius: 72px;
+    
+    background: #FDE482;
+    box-shadow: 5px 5px 0px 0px #000;
+    color: #FFF;
+    text-align: center;
+    text-shadow: 2px 4px 0px #000;
+    font-family: Inter;
+    font-size: 52px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 100%;
+    outline: 3px solid #000000
+    /* 40px */
 }
 
 .task-list input[type="checkbox"] {
@@ -27,22 +43,51 @@ body {
     transform: scale(1.5);
 }
 
-label {
-    color: #000000;
-}
 
 .add-task {
-    background-color: #ff0000; /* Bright red */
-    color: #ffffff;
-    padding: 10px 15px;
-    border: none;
-    font-size: 18px;
+
     cursor: pointer;
     display: block;
     margin-top: 10px;
     width: 100%;
+    width: 269px;
+    height: 269px;
+    flex-shrink: 0;
+    border-radius: 269px;
+    border: 13px solid #000;
+
+    background: #3DFCD2;
+
+    box-shadow: 13px 13px 0px -5px #000;
+}
+
+.addTaskLabel {
+
+    color: #FFF;
+    text-align: center;
+
+    font-family: Inter;
+    font-size: 256px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 100%;
+    /* 256px */
+
+    display: flex;
+
+    height: 269px;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+#addTask>label>b {
+    text-shadow: 10px 10px 0px #000;
+
+
+
 }
 
 .add-task:hover {
-    background-color: #cc0000;
+    background-color: #0c9a8e76;
 }
