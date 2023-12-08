@@ -33,6 +33,10 @@ class MyForm(FlaskForm):
 def index():
     return render_template('index.html')
 
+@app.route('/newindex')
+def newIndex():
+    return render_template('newIndex.html')
+
 @app.route('/form', methods=['GET', 'POST']) 
 def form():
     form = MyForm()
